@@ -1,0 +1,2 @@
+1.parallel scrolling
+2. gold - #fff3dc

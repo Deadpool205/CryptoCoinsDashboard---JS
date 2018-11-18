@@ -1,0 +1,48 @@
+
+#coins-page{
+    padding: 3%;
+
+}
+
+.parallax { 
+    /* The image used */
+    background-image: url("../img/coins.jpg");
+    opacity: 0.3;
+
+    /* Set a specific height */
+    height: 500px; 
+
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#main{
+    height: 500px;
+}
+
+#last-pic{
+    background-image: url("../img/calculation.jpg");
+    opacity: 0.5;
+    height: 1000px; 
+
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+
+}
+
+#headline h1{
+    font-family: 'Federant', cursive;
+    -webkit-text-stroke: 2px black;
+    color: rgb(197, 195, 195);
+    font-size: 6rem;
+    
+
+}
+
