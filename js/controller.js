@@ -25,7 +25,7 @@ const createToggle = (target) => {
 
 const CreateCoinCard = (coin) => {
     let card = `<div class="card d-flex mt-3" style="width: 18rem; z-index: 1">
-        <input type="hidden" class="ml-auto" id="on-off-switch-${coin.symbol}" value="0">
+        <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="0">
             <div class="card-body">
                 <h5 class="card-title">${coin.symbol}</h5>
                 <p class="card-text">${coin.name}</p>
@@ -40,7 +40,7 @@ const CreateCoinCard = (coin) => {
 const drawCards = (coins) => {
     for (let i = 0; i < coins.length; i++) {
         DOM.coinsPage.append(CreateCoinCard(coins[i]));
-        createToggle(coins[i].symbol)
+        createToggle(coins[i].id)
 
     }
     DOM.mainContainer.height(DOM.coinsPage.height() + 300)
@@ -49,9 +49,7 @@ const drawCards = (coins) => {
 const drawCoins = async () => {
     try {
         let coins = await getAllCoins();
-        coins = JSON.parse(coins)
         drawCards(coins);
-
     }
     catch (err) {
         console.log(err)
@@ -59,4 +57,30 @@ const drawCoins = async () => {
 }
 
 
+// Generic Api Call function that supports caching
+const apiCall = (url) =>{
+    return new Promise((resolve, reject) => {
+        if (url in cache && $.now() - cache[url].time < cacheTimeout) { 
+            console.log("cache hit")
+            resolve(cache[url].response);
+        }
+        else {
+            $.ajax({
+                method: "GET",
+                dataType: "json",
+                url: url,
+                success: (response) => {
+                    cache[url] = new Object();
+                    cache[url].response = response;
+                    cache[url].time = $.now();
+                    console.log("api hit")
+                    resolve(response);
 
+                }, error: (error) => {
+                    reject(error);
+                }
+            })
+            
+        }
+    })
+}
