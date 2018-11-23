@@ -5,7 +5,7 @@ const getAllCoins = () => {
 
 
 const getCoinDetails = (coin) => {
-    return apiCall(coinsDetailsAPI + coin);
+    return apiCall(coinsApi + coin.toLowerCase());
 }
 
 

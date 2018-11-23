@@ -8,6 +8,9 @@ $(window).on("scroll", function () {
     }
 })
 
+
+
+
 const createToggle = (target) => {
     new DG.OnOffSwitch({
         el: `#on-off-switch-${target}`,
@@ -24,12 +27,14 @@ const createToggle = (target) => {
 
 
 const CreateCoinCard = (coin) => {
-    let card = `<div class="card d-flex mt-3" style="width: 18rem; z-index: 1">
+    let card = `<div class="card d-flex mt-3" style="width: 18rem; z-index: 1;">
         <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="0">
-            <div class="card-body">
+            <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>
                 <p class="card-text">${coin.name}</p>
-                <a href="" class="btn btn-warning">More Info</a>
+                <a data-toggle="collapse" href="#collapse-${coin.name}" role="button" aria-expanded="true" aria-controls="collapse-${coin.name}" class="btn btn-warning" onclick="moreInfo('${coin.name}')">More Info</a>
+            </div>
+            <div class="collapse" id="collapse-${coin.name}">
             </div>
         </div>`;
 
@@ -56,31 +61,29 @@ const drawCoins = async () => {
     }
 }
 
+const showMoreInfo = (id, info) => {
+    let src = info["image"]["thumb"];
+    let img = $('<img>');
+    img.attr('src', src);
+    $(id).html(img);
 
-// Generic Api Call function that supports caching
-const apiCall = (url) =>{
-    return new Promise((resolve, reject) => {
-        if (url in cache && $.now() - cache[url].time < cacheTimeout) { 
-            console.log("cache hit")
-            resolve(cache[url].response);
+
+}
+
+const moreInfo = async (coin) => {
+    try {
+        if ($("#collapse-" + coin).hasClass("show")) {
+            return
         }
         else {
-            $.ajax({
-                method: "GET",
-                dataType: "json",
-                url: url,
-                success: (response) => {
-                    cache[url] = new Object();
-                    cache[url].response = response;
-                    cache[url].time = $.now();
-                    console.log("api hit")
-                    resolve(response);
-
-                }, error: (error) => {
-                    reject(error);
-                }
-            })
-            
+            let info = await getCoinDetails(coin);
+            showMoreInfo("#collapse-" + coin, info);
         }
-    })
+
+    }
+    catch (err) {
+        console.log(err)
+    }
 }
+
+
