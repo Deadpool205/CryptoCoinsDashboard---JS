@@ -1,3 +1,5 @@
+
+
 $(window).on("scroll", function () {
     if ($(window).scrollTop()) {
         $('nav').addClass('black');
@@ -8,6 +10,10 @@ $(window).on("scroll", function () {
     }
 })
 
+
+DOM.coinSearch.on("keyup", () => {
+    filterCoin(DOM.coinSearch.val())
+})
 
 
 
@@ -24,15 +30,13 @@ const createToggle = (target) => {
     })
 }
 
-
-
 const CreateCoinCard = (coin) => {
-    let card = `<div class="card d-flex mt-3" style="width: 18rem; z-index: 1;">
+    let card = `<div id="${coin.symbol}" class="card mt-3" style="width: 18rem; z-index: 1;">
         <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="0">
             <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>
                 <p class="card-text">${coin.name}</p>
-                <a data-toggle="collapse" href="#collapse-${coin.name}" role="button" aria-expanded="true" aria-controls="collapse-${coin.name}" class="btn btn-warning" onclick="moreInfo('${coin.name}')">More Info</a>
+                <a data-toggle="collapse" href="#collapse-${coin.name}" role="button" aria-expanded="true" aria-controls="collapse-${coin.name}" class="btn btn-warning">More Info</a>
             </div>
             <div class="collapse" id="collapse-${coin.name}">
             </div>
@@ -46,6 +50,9 @@ const drawCards = (coins) => {
     for (let i = 0; i < coins.length; i++) {
         DOM.coinsPage.append(CreateCoinCard(coins[i]));
         createToggle(coins[i].id)
+        $("#" + coins[i].symbol).on("click", () => {
+            moreInfo(coins[i]);
+        })
 
     }
     DOM.mainContainer.height(DOM.coinsPage.height() + 300)
@@ -71,13 +78,21 @@ const showMoreInfo = (id, info) => {
 }
 
 const moreInfo = async (coin) => {
+    let convertDict = [];
     try {
-        if ($("#collapse-" + coin).hasClass("show")) {
+        if ($("#collapse-" + coin.name).hasClass("show")) {
             return
         }
         else {
-            let info = await getCoinDetails(coin);
-            showMoreInfo("#collapse-" + coin, info);
+            let info = await getCoinDetails(coin.id);
+            Promise.all([convertCoin((coin.symbol).toUpperCase(), "USD"), convertCoin((coin.symbol).toUpperCase(), "ILS"), convertCoin((coin.symbol).toUpperCase(), "EUR")])
+                .then((res) => {
+                    convertDict.push(res)
+                }).then(() => {
+                    info.convertDict = convertDict;
+                })
+
+            showMoreInfo("#collapse-" + coin.name, info);
         }
 
     }
@@ -86,4 +101,15 @@ const moreInfo = async (coin) => {
     }
 }
 
+const filterCoin = (str) => {
+    if (str) {
+        let currentDiv = $("[id*=" + str + "]")
+        currentDiv.show();
+        let othersDIV = $(".card").not(currentDiv);
+        othersDIV.hide();
+    }
+    else {
+        $(".card").show();
+    }
+}
 

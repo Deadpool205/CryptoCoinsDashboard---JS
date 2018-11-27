@@ -2,12 +2,12 @@ main page
     move toggle button inside
     implement more info
     floating "go to live reports" button
-    yee
+
     validation on coins number (min 1, max 5)
-    coffee?
-    search
 
 live reports page
     graphs
 
 responsive on mobile
+
+loading icon

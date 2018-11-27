@@ -1,15 +1,15 @@
+$(function () {
+
+    const init = () => {
+
+        console.log("init")
+        drawCoins();
+    }
+
+    init();
 
 
-const init = () => {
-
-    console.log("init")
-    drawCoins();
-}
-
-init();
-
-
-
+});
 
 
 
