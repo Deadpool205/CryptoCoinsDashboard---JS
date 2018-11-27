@@ -69,29 +69,25 @@ const drawCoins = async () => {
 }
 
 const showMoreInfo = (id, info) => {
+    $(id).empty();
     let src = info["image"]["thumb"];
     let img = $('<img>');
     img.attr('src', src);
-    $(id).html(img);
+    $(id).append(img);
+    $(id).append(`<div>USD: ${info.currencyExchange["USD"]}<br>EUR: ${info.currencyExchange["EUR"]}<br>ILS: ${info.currencyExchange["ILS"]}</div>`);
 
 
 }
 
 const moreInfo = async (coin) => {
-    let convertDict = [];
     try {
         if ($("#collapse-" + coin.name).hasClass("show")) {
             return
         }
         else {
             let info = await getCoinDetails(coin.id);
-            Promise.all([convertCoin((coin.symbol).toUpperCase(), "USD"), convertCoin((coin.symbol).toUpperCase(), "ILS"), convertCoin((coin.symbol).toUpperCase(), "EUR")])
-                .then((res) => {
-                    convertDict.push(res)
-                }).then(() => {
-                    info.convertDict = convertDict;
-                })
-
+            let currencyExchange = await convertCoin((coin.symbol).toUpperCase(), "USD,EUR,ILS");
+            info.currencyExchange = currencyExchange;
             showMoreInfo("#collapse-" + coin.name, info);
         }
 
