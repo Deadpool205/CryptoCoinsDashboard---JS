@@ -2,8 +2,8 @@ $(function () {
 
     const init = () => {
 
-        console.log("init")
-        drawCoins();
+
+        router.home()
     }
 
     init();

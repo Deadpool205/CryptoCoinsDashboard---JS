@@ -65,8 +65,17 @@ nav ul li a {
     color: black;
     font-family: 'Oswald', sans-serif;
     font-size: 2rem;
-    
+   
 }
+nav ul li a:hover {
+
+    cursor: pointer;
+    text-decoration: underline !important;
+   
+}
+
+
+
 
 .menu-icon {
     line-height: 60px;

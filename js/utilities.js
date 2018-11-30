@@ -25,3 +25,21 @@ const apiCall = (url) => {
         }
     })
 }
+
+
+
+const getTemplate = (param) => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            method: "GET",
+            url: templateService + param + ".html",
+            success: (response) => {
+                resolve(response);
+
+            }, error: (error) => {
+                reject(error);
+            }
+        })
+
+    })
+}

@@ -109,3 +109,9 @@ const filterCoin = (str) => {
     }
 }
 
+// const getView = async (view) => {
+
+//         let content = await getTemplate(view);
+//         DOM.mainContainer.html(content);
+
+// }

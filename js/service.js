@@ -1,6 +1,5 @@
 
 
-
 const getAllCoins = () => {
     return apiCall(coinsApi);
 }
