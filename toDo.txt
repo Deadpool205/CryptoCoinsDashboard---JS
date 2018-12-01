@@ -1,6 +1,5 @@
 main page
     move toggle button inside
-    implement more info
     floating "go to live reports" button
 
     validation on coins number (min 1, max 5)

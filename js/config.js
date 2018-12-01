@@ -1,5 +1,5 @@
-
-
+const coinsObjArray = [];
+let chart;
 const cacheTimeout = 5 * 60 * 1000; // 5 minutes
 const coinsApi = "https://api.coingecko.com/api/v3/coins/";
 const convertApi = "https://min-api.cryptocompare.com/data/price?fsym=";
@@ -28,8 +28,12 @@ router.home = async () => {
     drawCoins();
 }
 
-router.liveReports = function () {
-    getView("liveReportsView");
+router.liveReports = async () => {
+    let content = await getTemplate("liveReportsView");
+    DOM.mainContainer.html(content);
+    chart = new CanvasJS.Chart("chartContainer", createOptions())
+    chart.render();
+
 }
 
 router.about = async () => {
@@ -37,6 +41,72 @@ router.about = async () => {
     DOM.mainContainer.html(content);
 }
 
+
+const initCoinData = (_name, _color) => {
+
+    let coinData = {
+        type: "line",
+        showInLegend: true,
+        name: _name,
+        color: _color,
+        markerType: "square",
+        xValueFormatString: "mm:ss",
+        color: "#F08080",
+        yValueFormatString: "#,##$",
+        dataPoints: [
+        ]
+    }
+    return coinData
+
+}
+
+
+
+const initOptions = () => {
+
+    let options = {
+
+        animationEnabled: true,
+        theme: "light2",
+        title: {
+            text: "Coins Charts"
+        },
+        axisX: {
+            valueFormatString: "mm:ss"
+        },
+        axisY: {
+            title: "coins value",
+            suffix: "$"
+            // minimum: 30
+        },
+        toolTip: {
+            shared: true
+        },
+        legend: {
+            cursor: "pointer",
+            verticalAlign: "bottom",
+            horizontalAlign: "left",
+            dockInsidePlotArea: true,
+            itemclick: toogleDataSeries
+        },
+        data: []
+    }
+    return options;
+
+};
+
+
+
+const colors = ["red", "blue"]
+
+function toogleDataSeries(e) {
+    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+        e.dataSeries.visible = false;
+    } else {
+        e.dataSeries.visible = true;
+    }
+    e.chart.render();
+}
 
 
 

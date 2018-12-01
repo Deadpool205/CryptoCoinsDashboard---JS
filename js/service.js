@@ -16,3 +16,11 @@ const convertCoin = (from, to) => {
 
 
 
+const addCoinToChart = async (coin) => {
+
+    let currentCoin = await getCoinDetails(coin);
+    coinsObjArray.push(currentCoin);
+
+
+}
+
