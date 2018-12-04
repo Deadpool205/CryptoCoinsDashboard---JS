@@ -22,13 +22,6 @@ const convertCoin = (from, to , cache) => {
 
 
 
-const addCoinToChart = async (coin) => {
-
-    let currentCoin = await getCoinDetails(coin);
-    coinsObjArray.push(currentCoin);
-
-
-}
 
 const chartExchangeRate = (url) => {
     return new Promise((resolve, reject) => {

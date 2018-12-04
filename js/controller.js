@@ -35,14 +35,14 @@ const createToggle = (target) => {
 }
 
 const CreateCoinCard = (coin) => {
-    let card = `<div id="${coin.name}" class="card mt-3" style="width: 18rem; z-index: 1;">
+    let card = `<div id="${coin.id}" class="card mt-3" style="width: 18rem; z-index: 1;">
         <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="0">
             <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>
                 <p class="card-text">${coin.name}</p>
-                <a data-toggle="collapse" href="#collapse-${coin.name}" role="button" aria-expanded="true" aria-controls="collapse-${coin.name}" class="btn btn-warning">More Info</a>
+                <a data-toggle="collapse" href="#collapse-${coin.id}" role="button" aria-expanded="true" aria-controls="collapse-${coin.id}" class="btn btn-warning">More Info</a>
             </div>
-            <div class="collapse" id="collapse-${coin.name}">
+            <div class="collapse" id="collapse-${coin.id}">
             </div>
         </div>`;
 
@@ -54,7 +54,7 @@ const drawCards = (coins) => {
     for (let i = 0; i < coins.length; i++) {
         DOM.coinsPage.append(CreateCoinCard(coins[i]));
         createToggle(coins[i].id)
-        $("#" + coins[i].name).find("a").on("click", () => {
+        $("#" + coins[i].id).find("a").on("click", () => {
             moreInfo(coins[i]);
         })
 
@@ -70,6 +70,9 @@ const drawCoins = async () => {
     try {
         let coins = await getAllCoins();
         drawCards(coins);
+        for (let i = 0; i < coinsObjArray.length; i++) {
+            DG.switches[`#on-off-switch-${coinsObjArray[i].id}`].toggle()
+        }
     }
     catch (err) {
         console.log(err)
@@ -82,21 +85,21 @@ const showMoreInfo = (id, info) => {
     let img = $('<img>');
     img.attr('src', src);
     $(id).append(img);
-    $(id).append(`<div>USD: ${info.currencyExchange["USD"]}<br>EUR: ${info.currencyExchange["EUR"]}<br>ILS: ${info.currencyExchange["ILS"]}</div>`);
+    $(id).append(`<div> USD: ${info.currencyExchange["USD"]} <br> EUR: ${info.currencyExchange["EUR"]} <br> ILS: ${info.currencyExchange["ILS"]}</div>`);
 
 
 }
 
 const moreInfo = async (coin) => {
     try {
-        if ($("#collapse-" + coin.name).hasClass("show")) {
+        if ($("#collapse-" + coin.id).hasClass("show")) {
             return
         }
         else {
             let info = await getCoinDetails(coin.id);
-            let currencyExchange = await convertCoin((coin.symbol).toUpperCase(), "USD,EUR,ILS" , true);
+            let currencyExchange = await convertCoin((coin.symbol).toUpperCase(), "USD,EUR,ILS", true);
             info.currencyExchange = currencyExchange;
-            showMoreInfo("#collapse-" + coin.name, info);
+            showMoreInfo("#collapse-" + coin.id, info);
         }
 
     }
@@ -148,3 +151,17 @@ const stopTimer = () => {
     clearInterval(timer);
 }
 
+const addCoinToChart = async (coin) => {
+    if (coinsObjArray.length > 4) {
+        for (let i = 0; i < coinsObjArray.length; i++) {
+            let useCoin = $('<div class="card"></div>');
+            useCoin.append(coinsObjArray[i].name)
+            $('.modal-body').append(useCoin);
+
+        }
+        $('#showModal').modal('show');
+    }
+    let currentCoin = await getCoinDetails(coin);
+    coinsObjArray.push(currentCoin);
+
+}
