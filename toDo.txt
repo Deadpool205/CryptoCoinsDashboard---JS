@@ -2,11 +2,15 @@ main page
     move toggle button inside
     floating "go to live reports" button
 
-    validation on coins number (min 1, max 5)
+    validation on coins number (min 1, max 5) - > (modal) 
 
 live reports page
-    graphs
+    diffrent colors to coins in graph
+
 
 responsive on mobile
 
 loading icon
+
+handle coins names and id's issues in creating divs
+

@@ -28,6 +28,9 @@ const apiCall = (url) => {
 
 
 
+
+
+
 const getTemplate = (param) => {
     return new Promise((resolve, reject) => {
         $.ajax({

@@ -94,7 +94,7 @@ const moreInfo = async (coin) => {
         }
         else {
             let info = await getCoinDetails(coin.id);
-            let currencyExchange = await convertCoin((coin.symbol).toUpperCase(), "USD,EUR,ILS");
+            let currencyExchange = await convertCoin((coin.symbol).toUpperCase(), "USD,EUR,ILS" , true);
             info.currencyExchange = currencyExchange;
             showMoreInfo("#collapse-" + coin.name, info);
         }
@@ -135,7 +135,7 @@ const initTimer = () => {
     timer = setInterval(async () => {
         let date = new Date();
         for (let i = 0; i < coinsObjArray.length; i++) {
-            let usdPrice = await convertCoin(coinsObjArray[i].symbol.toUpperCase(), "USD")
+            let usdPrice = await convertCoin(coinsObjArray[i].symbol.toUpperCase(), "USD", false)
             let currentPoint = { x: date, y: usdPrice["USD"] };
             options.data[i].dataPoints.push(currentPoint);
         }
