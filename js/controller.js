@@ -35,7 +35,7 @@ const createToggle = (target) => {
 }
 
 const createCoinCard = (coin, state) => {
-    let card = `<div id="${coin.id}" class="card mt-3" style="width: 18rem; z-index: 1;">
+    let card = `<div id="${coin.id}" class="card mt-3 p-3" style="width: 18rem; z-index: 1;">
         <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="${state}">
             <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>
@@ -197,10 +197,8 @@ const removeFromChart = (coin) => {
 
 const saveCoinsToChart = () => {
     let coinsInUse = $('.modal-body').find('input');
-    // let coinsToRemove = []
     for (let i = 0; i < coinsInUse.length; i++) {
         if (coinsInUse[i].value !== "1") {
-            // coinsToRemove.push(coinsInUse.data)
             for (let j = 0; j < coinsObjArray.length; j++) {
                 if (coinsInUse[i].dataset["coin"] == coinsObjArray[j].id) {
                     coinsObjArray.splice(j, 1)

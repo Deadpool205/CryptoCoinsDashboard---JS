@@ -42,16 +42,15 @@ router.about = async () => {
 }
 
 
-const initCoinData = (_name, _color) => {
+const initCoinData = (name, color) => {
 
     let coinData = {
         type: "line",
         showInLegend: true,
-        name: _name,
-        color: _color,
+        name,
         markerType: "square",
         xValueFormatString: "mm:ss",
-        color: "#F08080",
+        color,
         yValueFormatString: "#,##$",
         dataPoints: [
         ]
@@ -97,7 +96,7 @@ const initOptions = () => {
 
 
 
-const colors = ["red", "blue"]
+const colors = ["red", "blue", "orange", "yellow", "green"]
 
 function toogleDataSeries(e) {
     if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {

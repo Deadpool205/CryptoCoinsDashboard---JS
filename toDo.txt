@@ -1,10 +1,10 @@
 main page
-    move toggle button inside
+
     floating "go to live reports" button
 
 
 live reports page
-    diffrent colors to coins in graph
+
 
 
 responsive on mobile
@@ -13,8 +13,8 @@ loading icon
 
 
 add timer callback method to new function - renderChart() and call renderChart() also before starting timer
-inside modal, dont change coinObjArray, only when pressing OK
-fix toggle press issue (pressing toggle background do not trigger onclick - causes UI/coinObjArray inconsistency)
+
+
 change coinObjArray to dictionary. use coin.id as key and coin as value\
-build coin card according to coin state (track/untracked) by changing createCoinCard(coin) to createCoinCard(coin,track)
+
 
