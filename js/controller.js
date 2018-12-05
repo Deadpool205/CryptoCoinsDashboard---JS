@@ -34,9 +34,9 @@ const createToggle = (target) => {
     })
 }
 
-const CreateCoinCard = (coin) => {
+const createCoinCard = (coin, state) => {
     let card = `<div id="${coin.id}" class="card mt-3" style="width: 18rem; z-index: 1;">
-        <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="0">
+        <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="${state}">
             <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>
                 <p class="card-text">${coin.name}</p>
@@ -51,28 +51,37 @@ const CreateCoinCard = (coin) => {
 }
 
 const drawCards = (coins) => {
+    let state;
     for (let i = 0; i < coins.length; i++) {
-        DOM.coinsPage.append(CreateCoinCard(coins[i]));
+        let state = 0;
+        for (let j = 0; j < coinsObjArray.length; j++) {
+            if (coinsObjArray[j].id == coins[i].id) {
+                state = 1
+            }
+        }
+        DOM.coinsPage.append(createCoinCard(coins[i], state));
         createToggle(coins[i].id)
         $("#" + coins[i].id).find("a").on("click", () => {
             moreInfo(coins[i]);
         })
-
     }
-    $(".on-off-switch-track").on("click", (e) => {
-        let CurrentID = e.currentTarget.parentElement.parentElement.id
-        addCoinToChart(CurrentID);
+    $(".on-off-switch").on("click", (e) => {
+        let currentID = e.currentTarget.parentElement.id;
+        if (e.currentTarget.previousSibling.value == "0") {
+            addCoinToChart(currentID);
+        }
+        else {
+            removeFromChart(currentID)
+        }
     })
     DOM.mainContainer.height(DOM.coinsPage.height() + 300)
 }
 
 const drawCoins = async () => {
     try {
+        DOM.coinsPage.empty();
         let coins = await getAllCoins();
         drawCards(coins);
-        for (let i = 0; i < coinsObjArray.length; i++) {
-            DG.switches[`#on-off-switch-${coinsObjArray[i].id}`].toggle()
-        }
     }
     catch (err) {
         console.log(err)
@@ -152,16 +161,56 @@ const stopTimer = () => {
 }
 
 const addCoinToChart = async (coin) => {
-    if (coinsObjArray.length > 4) {
+    if (coinsObjArray.length >= 5) {
+        $('.modal-body').empty();
         for (let i = 0; i < coinsObjArray.length; i++) {
-            let useCoin = $('<div class="card"></div>');
+            let useCoin = $(`<div class="card"><input data-coin=${coinsObjArray[i].id} type="hidden" class="ml-auto" id="on-off-switch-${coinsObjArray[i].id}-inUse" value="1"></div>`);
             useCoin.append(coinsObjArray[i].name)
             $('.modal-body').append(useCoin);
-
+            createToggle(`${coinsObjArray[i].id}-inUse`)
+            $("#save-button").on("click", (e) => {
+                saveCoinsToChart()
+            })
+            $('#showModal').modal('show');
         }
-        $('#showModal').modal('show');
     }
-    let currentCoin = await getCoinDetails(coin);
-    coinsObjArray.push(currentCoin);
+    else {
+        let currentCoin = await getCoinDetails(coin);
+        coinsObjArray.push(currentCoin);
+    }
+
+}
+
+
+const removeFromChart = (coin) => {
+    for (let i = 0; i < coinsObjArray.length; i++) {
+        if (coinsObjArray[i].id == coin) {
+            coinsObjArray.splice(i, 1)
+        }
+
+    }
+}
+
+
+
+
+
+const saveCoinsToChart = () => {
+    let coinsInUse = $('.modal-body').find('input');
+    // let coinsToRemove = []
+    for (let i = 0; i < coinsInUse.length; i++) {
+        if (coinsInUse[i].value !== "1") {
+            // coinsToRemove.push(coinsInUse.data)
+            for (let j = 0; j < coinsObjArray.length; j++) {
+                if (coinsInUse[i].dataset["coin"] == coinsObjArray[j].id) {
+                    coinsObjArray.splice(j, 1)
+                }
+
+            }
+        }
+    }
+
+    $('#showModal').modal('toggle');
+    router.home()
 
 }

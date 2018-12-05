@@ -9,15 +9,15 @@ const getCoinDetails = (coin) => {
     return apiCall(coinsApi + coin.toLowerCase());
 }
 
-const convertCoin = (from, to , cache) => {
+const convertCoin = (from, to, cache) => {
     let url = convertApi + from + "&tsyms=" + to
     if (cache) {
         return apiCall(url);
     }
-    else{
-         return chartExchangeRate(url)
+    else {
+        return chartExchangeRate(url)
     }
-    
+
 }
 
 
@@ -25,20 +25,20 @@ const convertCoin = (from, to , cache) => {
 
 const chartExchangeRate = (url) => {
     return new Promise((resolve, reject) => {
-            $.ajax({
-                method: "GET",
-                dataType: "json",
-                url: url,
-                success: (response) => {
-                    console.log("api hit")
-                    resolve(response);
+        $.ajax({
+            method: "GET",
+            dataType: "json",
+            url: url,
+            success: (response) => {
+                console.log("api hit")
+                resolve(response);
 
-                }, error: (error) => {
-                    reject(error);
-                }
-            })
+            }, error: (error) => {
+                reject(error);
+            }
+        })
 
-        }
+    }
     )
 }
 
