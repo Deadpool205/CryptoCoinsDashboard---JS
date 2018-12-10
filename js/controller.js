@@ -1,5 +1,4 @@
-let timer;
-let options
+
 
 $(window).on("scroll", function () {
     if ($(window).scrollTop()) {
@@ -12,7 +11,7 @@ $(window).on("scroll", function () {
 })
 
 $(".menu").find("a").on("click", () => {
-    stopTimer();
+    stopChartTimer();
 })
 
 DOM.coinSearch.on("keyup", () => {
@@ -21,8 +20,8 @@ DOM.coinSearch.on("keyup", () => {
 
 
 
-const createToggle = (target) => {
-    new DG.OnOffSwitch({
+const createToggle = (target, bindToggleListener) => {
+    let opts = {
         el: `#on-off-switch-${target}`,
         height: 25,
         trackColorOn: '#ffc107',
@@ -31,12 +30,18 @@ const createToggle = (target) => {
         textColorOff: '#fff',
         textOn: '',
         textOff: ''
-    })
+    };
+
+    if (bindToggleListener) {
+        opts["listener"] = toggleSwitchListener;
+    }
+
+    new DG.OnOffSwitch(opts);
 }
 
 const createCoinCard = (coin, state) => {
     let card = `<div id="${coin.id}" class="card mt-3 p-3" style="width: 18rem; z-index: 1;">
-        <input type="hidden" class="ml-auto" id="on-off-switch-${coin.id}" value="${state}">
+        <input type="hidden" name="${coin.id}" class="ml-auto" id="on-off-switch-${coin.id}" value="${state}">
             <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>
                 <p class="card-text">${coin.name}</p>
@@ -50,37 +55,46 @@ const createCoinCard = (coin, state) => {
     return card;
 }
 
+const toggleSwitchListener = (name, checked) => {
+    console.log("name: " + name + ", checked: " + checked);
+    if (checked) {
+        addCoinToChart(name);
+    }
+    else {
+        removeFromChart(name)
+    }
+}
+
 const drawCards = (coins) => {
     let state;
-    for (let i = 0; i < coins.length; i++) {
+    for (var key in coins) {
+        let coin = coins[key];
         let state = 0;
-        for (let j = 0; j < coinsObjArray.length; j++) {
-            if (coinsObjArray[j].id == coins[i].id) {
+        for (let j = 0; j < selectedCoins.length; j++) {
+            if (selectedCoins[j] == coin.id) {
                 state = 1
             }
         }
-        DOM.coinsPage.append(createCoinCard(coins[i], state));
-        createToggle(coins[i].id)
-        $("#" + coins[i].id).find("a").on("click", () => {
-            moreInfo(coins[i]);
+        DOM.coinsPage.append(createCoinCard(coin, state));
+        createToggle(coin.id, true)
+        $("#" + coin.id).find("a").on("click", () => {
+            moreInfo(coin);
         })
     }
-    $(".on-off-switch").on("click", (e) => {
-        let currentID = e.currentTarget.parentElement.id;
-        if (e.currentTarget.previousSibling.value == "0") {
-            addCoinToChart(currentID);
-        }
-        else {
-            removeFromChart(currentID)
-        }
-    })
-    DOM.mainContainer.height(DOM.coinsPage.height() + 300)
+
+    DOM.mainContainer.height(DOM.coinsPage.height() + 300);
 }
 
-const drawCoins = async () => {
+const initCoinsData = async () => {
+    response = await getAllCoins();
+    for (let i = 0; i < response.length; i++) {
+       coins[response[i].id] = response[i]
+    }
+}
+
+const drawCoins = () => {
     try {
         DOM.coinsPage.empty();
-        let coins = await getAllCoins();
         drawCards(coins);
     }
     catch (err) {
@@ -95,8 +109,6 @@ const showMoreInfo = (id, info) => {
     img.attr('src', src);
     $(id).append(img);
     $(id).append(`<div> USD: ${info.currencyExchange["USD"]} <br> EUR: ${info.currencyExchange["EUR"]} <br> ILS: ${info.currencyExchange["ILS"]}</div>`);
-
-
 }
 
 const moreInfo = async (coin) => {
@@ -129,86 +141,94 @@ const filterCoin = (str) => {
     }
 }
 
-const createOptions = () => {
+const createChartOptions = () => {
 
-    options = initOptions();
+    options = initChartOptions();
 
-    for (let i = 0; i < coinsObjArray.length; i++) {
-        let coinData = initCoinData(coinsObjArray[i].name, colors[i]);
+    for (let i = 0; i < selectedCoins.length; i++) {
+        let coinData = initCoinData(coins[selectedCoins[i]].name, colors[i]);
         options.data.push(coinData)
     }
-    initTimer();
+    initChartTimer();
     return options;
 }
 
-
-
-const initTimer = () => {
-    timer = setInterval(async () => {
+const initChartTimer = () => {
+    let f = async () => {
         let date = new Date();
-        for (let i = 0; i < coinsObjArray.length; i++) {
-            let usdPrice = await convertCoin(coinsObjArray[i].symbol.toUpperCase(), "USD", false)
+        for (let i = 0; i < selectedCoins.length; i++) {
+            let usdPrice = await convertCoin(coins[selectedCoins[i]].symbol.toUpperCase(), "USD", false);
             let currentPoint = { x: date, y: usdPrice["USD"] };
             options.data[i].dataPoints.push(currentPoint);
         }
         chart.render();
-    }, 5000)
+    };
+
+    timer = setInterval(f, 5000);
+    f();
 }
 
 
-const stopTimer = () => {
+const stopChartTimer = () => {
     clearInterval(timer);
 }
 
-const addCoinToChart = async (coin) => {
-    if (coinsObjArray.length >= 5) {
+const addCoinToChart = async (coinID) => {
+    selectedCoins.push(coinID);
+
+    if (selectedCoins.length > 5) {
+        // too many coins
         $('.modal-body').empty();
-        for (let i = 0; i < coinsObjArray.length; i++) {
-            let useCoin = $(`<div class="card"><input data-coin=${coinsObjArray[i].id} type="hidden" class="ml-auto" id="on-off-switch-${coinsObjArray[i].id}-inUse" value="1"></div>`);
-            useCoin.append(coinsObjArray[i].name)
+        for (let i = 0; i < selectedCoins.length; i++) {
+            let useCoin = $(`<div class="card"><input data-coin=${selectedCoins[i]} name="${selectedCoins[i]}" type="hidden" class="ml-auto" id="on-off-switch-${selectedCoins[i]}-inUse" value="1"></div>`);
+            useCoin.append(selectedCoins[i])
             $('.modal-body').append(useCoin);
-            createToggle(`${coinsObjArray[i].id}-inUse`)
-            $("#save-button").on("click", (e) => {
-                saveCoinsToChart()
-            })
-            $('#showModal').modal('show');
+            createToggle(`${selectedCoins[i]}-inUse`, false)
         }
-    }
-    else {
-        let currentCoin = await getCoinDetails(coin);
-        coinsObjArray.push(currentCoin);
+
+        $('.modal-body').append(`<div id="modal-body-error" class="alert alert-danger"></div>`);
+        $('#modal-body-error').hide();
+
+        $('#showModal').on('hidden.bs.modal', function () {
+            // closing event
+            if (selectedCoins.length > 5) {
+                removeFromChart(coinID);
+            }
+            drawCoins();
+          })
+
+        $("#save-button").on("click", (e) => {
+            updateSelectedCoins();
+
+            if (selectedCoins.length <= 5) {
+                $('#showModal').modal('toggle');
+            } else {
+                $('#modal-body-error').show();
+                $('#modal-body-error').text("You must select maximum 5 coins!!!");
+            }
+            
+        })
+        $('#showModal').modal('show');
     }
 
 }
 
 
-const removeFromChart = (coin) => {
-    for (let i = 0; i < coinsObjArray.length; i++) {
-        if (coinsObjArray[i].id == coin) {
-            coinsObjArray.splice(i, 1)
+const removeFromChart = (coinID) => {
+    for (let i = 0; i < selectedCoins.length; i++) {
+        if (selectedCoins[i] == coinID) {
+            selectedCoins.splice(i, 1);
         }
-
     }
 }
 
 
-
-
-
-const saveCoinsToChart = () => {
+const updateSelectedCoins = () => {
     let coinsInUse = $('.modal-body').find('input');
     for (let i = 0; i < coinsInUse.length; i++) {
         if (coinsInUse[i].value !== "1") {
-            for (let j = 0; j < coinsObjArray.length; j++) {
-                if (coinsInUse[i].dataset["coin"] == coinsObjArray[j].id) {
-                    coinsObjArray.splice(j, 1)
-                }
-
-            }
+            removeFromChart(coinsInUse[i].dataset["coin"]);
         }
     }
-
-    $('#showModal').modal('toggle');
-    router.home()
-
+    drawCoins();
 }

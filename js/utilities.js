@@ -1,7 +1,7 @@
 // Generic Api Call function that supports caching
-const apiCall = (url) => {
+const apiCall = (url, useCache=true) => {
     return new Promise((resolve, reject) => {
-        if (url in cache && $.now() - cache[url].time < cacheTimeout) {
+        if (useCache && url in cache && $.now() - cache[url].time < cacheTimeout) {
             console.log("cache hit")
             resolve(cache[url].response);
         }

@@ -1,21 +1,19 @@
-const coinsObjArray = [];
 let chart;
 const cacheTimeout = 5 * 60 * 1000; // 5 minutes
 const coinsApi = "https://api.coingecko.com/api/v3/coins/";
 const convertApi = "https://min-api.cryptocompare.com/data/price?fsym=";
 const templateService = "http://localhost:5500/templates/";
 const cache = {};
+let timer;
+let options;
+let coins = {};
+const selectedCoins = [];
 
 const DOM = function () {
-
     return {
-
         mainContainer: $("#main"),
         coinSearch: $("#coinSearch"),
-
-
     }
-
 }();
 
 var router = {};
@@ -25,13 +23,14 @@ router.home = async () => {
     let content = await getTemplate("homeView");
     DOM.mainContainer.html(content);
     DOM.coinsPage = $("#coins-page")
+    await initCoinsData();
     drawCoins();
 }
 
 router.liveReports = async () => {
     let content = await getTemplate("liveReportsView");
     DOM.mainContainer.html(content);
-    chart = new CanvasJS.Chart("chartContainer", createOptions())
+    chart = new CanvasJS.Chart("chartContainer", createChartOptions())
     chart.render();
 
 }
@@ -49,34 +48,33 @@ const initCoinData = (name, color) => {
         showInLegend: true,
         name,
         markerType: "square",
-        xValueFormatString: "mm:ss",
+        xValueFormatString: "HH:mm:ss",
         color,
-        yValueFormatString: "#,##$",
-        dataPoints: [
-        ]
+        yValueFormatString: "#,##0.##$",
+        dataPoints: [ ]
     }
     return coinData
 
 }
 
 
-
-const initOptions = () => {
-
+const initChartOptions = () => {
     let options = {
 
         animationEnabled: true,
         theme: "light2",
+        zoomEnabled: true,
+        zoomType: "x",
+        culture: "en",
         title: {
             text: "Coins Charts"
         },
         axisX: {
-            valueFormatString: "mm:ss"
+            valueFormatString: "HH:mm:ss"
         },
         axisY: {
-            title: "coins value",
+            title: "Coin Value",
             suffix: "$"
-            // minimum: 30
         },
         toolTip: {
             shared: true
@@ -85,28 +83,16 @@ const initOptions = () => {
             cursor: "pointer",
             verticalAlign: "bottom",
             horizontalAlign: "left",
-            dockInsidePlotArea: true,
-            itemclick: toogleDataSeries
+            dockInsidePlotArea: true
         },
         data: []
     }
     return options;
-
 };
 
 
 
 const colors = ["red", "blue", "orange", "yellow", "green"]
-
-function toogleDataSeries(e) {
-    if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-        e.dataSeries.visible = false;
-    } else {
-        e.dataSeries.visible = true;
-    }
-    e.chart.render();
-}
-
 
 
 

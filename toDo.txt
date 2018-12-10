@@ -1,20 +1,9 @@
 main page
-
+    loading icon
+    "more info" on row
     floating "go to live reports" button
 
-
 live reports page
-
-
+    error if no coins are chosen
 
 responsive on mobile
-
-loading icon
-
-
-add timer callback method to new function - renderChart() and call renderChart() also before starting timer
-
-
-change coinObjArray to dictionary. use coin.id as key and coin as value\
-
-
