@@ -1,22 +1,29 @@
+$(function() {
+    $(window).on("scroll", function () {
+        if ($(window).scrollTop()) {
+            $('nav').addClass('black');
+        }
+    
+        else {
+            $('nav').removeClass('black');
+        }
+    })
+
+    $(".menu-icon").on("click", function() {
+        $("nav ul").toggleClass("showing");
+  });
+    
+    $(".menu").find("a").on("click", () => {
+        stopChartTimer();
+        $("nav ul").toggleClass("showing");
+    })
+    
+    DOM.coinSearch.on("keyup", () => {
+        filterCoin(DOM.coinSearch.val())
+    })
+});
 
 
-$(window).on("scroll", function () {
-    if ($(window).scrollTop()) {
-        $('nav').addClass('black');
-    }
-
-    else {
-        $('nav').removeClass('black');
-    }
-})
-
-$(".menu").find("a").on("click", () => {
-    stopChartTimer();
-})
-
-DOM.coinSearch.on("keyup", () => {
-    filterCoin(DOM.coinSearch.val())
-})
 
 
 
@@ -40,7 +47,7 @@ const createToggle = (target, bindToggleListener) => {
 }
 
 const createCoinCard = (coin, state) => {
-    let card = `<div id="${coin.id}" class="card mt-3 p-3" style="width: 18rem; z-index: 1;">
+    let card = `<div id="${coin.id}" class="card m-3 p-3 col-md-4 col-sm-6" style="display: inline-flex; width: 18rem; z-index: 1;">
         <input type="hidden" name="${coin.id}" class="ml-auto" id="on-off-switch-${coin.id}" value="${state}">
             <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>

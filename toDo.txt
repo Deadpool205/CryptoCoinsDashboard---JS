@@ -1,9 +1,6 @@
 main page
     loading icon
-    "more info" on row
     floating "go to live reports" button
 
 live reports page
     error if no coins are chosen
-
-responsive on mobile
