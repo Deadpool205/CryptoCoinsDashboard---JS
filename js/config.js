@@ -30,9 +30,13 @@ router.home = async () => {
 router.liveReports = async () => {
     let content = await getTemplate("liveReportsView");
     DOM.mainContainer.html(content);
-    chart = new CanvasJS.Chart("chartContainer", createChartOptions())
-    chart.render();
-
+    if (selectedCoins.length > 0) {
+        chart = new CanvasJS.Chart("chartContainer", createChartOptions())
+        chart.render();
+    }
+    else {
+        $("#chartContainer").text("No coins selected")
+    }
 }
 
 router.about = async () => {
@@ -51,7 +55,7 @@ const initCoinData = (name, color) => {
         xValueFormatString: "HH:mm:ss",
         color,
         yValueFormatString: "#,##0.##$",
-        dataPoints: [ ]
+        dataPoints: []
     }
     return coinData
 

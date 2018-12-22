@@ -173,7 +173,7 @@ const initChartTimer = () => {
         chart.render();
     };
 
-    timer = setInterval(f, 5000);
+    timer = setInterval(f, 2000);
     f();
 }
 
