@@ -1,23 +1,23 @@
-$(function() {
+$(function () {
     $(window).on("scroll", function () {
         if ($(window).scrollTop()) {
             $('nav').addClass('black');
         }
-    
+
         else {
             $('nav').removeClass('black');
         }
     })
 
-    $(".menu-icon").on("click", function() {
+    $(".menu-icon").on("click", function () {
         $("nav ul").toggleClass("showing");
-  });
-    
+    });
+
     $(".menu").find("a").on("click", () => {
         stopChartTimer();
         $("nav ul").toggleClass("showing");
     })
-    
+
     DOM.coinSearch.on("keyup", () => {
         filterCoin(DOM.coinSearch.val())
     })
@@ -52,7 +52,7 @@ const createCoinCard = (coin, state) => {
             <div class="card-body"  style="padding: 10px";>
                 <h5 class="card-title">${coin.symbol}</h5>
                 <p class="card-text">${coin.name}</p>
-                <a data-toggle="collapse" href="#collapse-${coin.id}" role="button" aria-expanded="true" aria-controls="collapse-${coin.id}" class="btn btn-warning">More Info</a>
+                <a data-toggle="collapse" href="#collapse-${coin.id}" role="button" aria-expanded="true" aria-controls="collapse-${coin.id}" class="btn btn-warning">More Info<div class="loader"></div></a>
             </div>
             <div class="collapse" id="collapse-${coin.id}">
             </div>
@@ -76,7 +76,7 @@ const drawCards = (coins) => {
     let state;
     for (var key in coins) {
         let coin = coins[key];
-        let state = 0;
+        state = 0;
         for (let j = 0; j < selectedCoins.length; j++) {
             if (selectedCoins[j] == coin.id) {
                 state = 1
@@ -95,7 +95,7 @@ const drawCards = (coins) => {
 const initCoinsData = async () => {
     response = await getAllCoins();
     for (let i = 0; i < response.length; i++) {
-       coins[response[i].id] = response[i]
+        coins[response[i].id] = response[i]
     }
 }
 
@@ -124,9 +124,11 @@ const moreInfo = async (coin) => {
             return
         }
         else {
+            $("#" + coin.id).find(".loader").show()
             let info = await getCoinDetails(coin.id);
             let currencyExchange = await convertCoin((coin.symbol).toUpperCase(), "USD,EUR,ILS", true);
             info.currencyExchange = currencyExchange;
+            $("#" + coin.id).find(".loader").hide()
             showMoreInfo("#collapse-" + coin.id, info);
         }
 
@@ -202,7 +204,7 @@ const addCoinToChart = async (coinID) => {
                 removeFromChart(coinID);
             }
             drawCoins();
-          })
+        })
 
         $("#save-button").on("click", (e) => {
             updateSelectedCoins();
@@ -213,7 +215,7 @@ const addCoinToChart = async (coinID) => {
                 $('#modal-body-error').show();
                 $('#modal-body-error').text("You must select maximum 5 coins!!!");
             }
-            
+
         })
         $('#showModal').modal('show');
     }
