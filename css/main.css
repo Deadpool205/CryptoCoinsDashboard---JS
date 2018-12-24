@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Oswald');
 @import url('https://fonts.googleapis.com/css?family=Federant|Oswald');
 
-#headline h1{
+.headline{
     font-family: 'Federant', cursive;
     -webkit-text-stroke: 0.5px black;
     color: #ffc107;
@@ -185,3 +185,9 @@ nav ul li a:hover {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+
+#about img{
+    float: left;
+    width: 30%;
+}
